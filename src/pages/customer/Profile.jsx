@@ -49,7 +49,7 @@ export default function Profile() {
         </dl>
       </div>
 
-      <button type="button" onClick={handleRefresh} className="btn-outline mt-6" disabled={busy}>
+      <button type="button" onClick={handleRefresh} className="mt-6 btn-outline" disabled={busy}>
         {busy ? 'Refreshing…' : 'Refresh profile'}
       </button>
 

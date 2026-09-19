@@ -1,6 +1,7 @@
+import { memo } from 'react'
 import { Link } from 'react-router-dom'
 
-export default function RoomTypeCard({ roomType }) {
+export default memo(function RoomTypeCard({ roomType }) {
   const { id, name, description, base_price, capacity_adults, capacity_children, amenities } = roomType
 
   return (
@@ -41,8 +42,8 @@ export default function RoomTypeCard({ roomType }) {
           </div>
         )}
 
-        <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
-          <p className="text-sm text-slate-500">
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4">
+          <p className="min-w-0 text-sm text-slate-500">
             <span className="text-lg font-bold text-slate-900">{base_price}</span> / night
           </p>
           <span className="text-sm font-medium text-brand-600 group-hover:text-brand-700">
@@ -52,4 +53,5 @@ export default function RoomTypeCard({ roomType }) {
       </div>
     </Link>
   )
-}
+})
+

@@ -94,6 +94,27 @@ describe('Rooms page', () => {
     })
   })
 
+  it('preserves a 0 filter value in the API params (B3)', async () => {
+    mock.onGet('/public/room-types').reply(...paginated([], { page: 1, per_page: 12, total: 0, last_page: 1 }))
+    // The old "x ?? x === 0" guard dropped 0 (falsy) - min_price=0 and
+    // min_children=0 disappeared from the request.
+    renderAt('/rooms?min_price=0&min_children=0')
+    await waitFor(() => {
+      const config = mock.history.get.findLast((c) => c.url === '/public/room-types')
+      expect(config.params.min_price).toBe(0)
+      expect(config.params.min_children).toBe(0)
+    })
+  })
+
+  it('omits nullish filters from the API params (B3)', async () => {
+    mock.onGet('/public/room-types').reply(...paginated([], { page: 1, per_page: 12, total: 0, last_page: 1 }))
+    renderAt('/rooms?max_price=&min_adults=')
+    await waitFor(() => {
+      const config = mock.history.get.findLast((c) => c.url === '/public/room-types')
+      expect(config.params).toEqual({ page: 1, per_page: 12 })
+    })
+  })
+
   it('renders pagination and navigates to the next page', async () => {
     const meta = { page: 1, per_page: 12, total: 25, last_page: 3 }
     mock

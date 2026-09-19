@@ -10,7 +10,7 @@ export default function Forbidden() {
       <p className="mt-2 text-sm text-slate-500">
         You do not have permission to view this page.
       </p>
-      <Link to={isStaff ? '/staff/dashboard' : '/'} className="btn-primary mt-6">
+      <Link to={isStaff ? '/staff/dashboard' : '/'} className="mt-6 btn-primary">
         {isStaff ? 'Back to Dashboard' : 'Back to Home'}
       </Link>
     </div>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 
 const MAX_VISIBLE_PAGES = 7
 
@@ -14,7 +14,7 @@ function buildPageList(currentPage, lastPage) {
   return [...pages].sort((a, b) => a - b)
 }
 
-export default function Pagination({ currentPage, lastPage, onPageChange }) {
+export default memo(function Pagination({ currentPage, lastPage, onPageChange }) {
   const pages = useMemo(() => buildPageList(currentPage, lastPage), [currentPage, lastPage])
 
   if (lastPage <= 1) return null
@@ -29,7 +29,7 @@ export default function Pagination({ currentPage, lastPage, onPageChange }) {
     const prev = pages[index - 1]
     if (prev !== undefined && page - prev > 1) {
       renderItems.push(
-        <span key={`ellipsis-${index}`} className="px-2 py-2 text-sm text-slate-400" aria-hidden="true">
+        <span key={`ellipsis-${index}`} className="inline-flex min-h-[2.5rem] items-center px-2 text-sm text-slate-400" aria-hidden="true">
           …
         </span>,
       )
@@ -42,7 +42,7 @@ export default function Pagination({ currentPage, lastPage, onPageChange }) {
       <button
         key={page}
         type="button"
-        className={`inline-flex h-9 min-w-9 items-center justify-center rounded-md border px-2 text-sm font-medium ${style}`}
+        className={`inline-flex min-h-[2.5rem] min-w-10 items-center justify-center rounded-md border px-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${style}`}
         aria-current={page === currentPage ? 'page' : undefined}
         onClick={() => handleChange(page)}
       >
@@ -52,7 +52,7 @@ export default function Pagination({ currentPage, lastPage, onPageChange }) {
   })
 
   return (
-    <nav className="flex items-center justify-center gap-2" aria-label="Pagination">
+    <nav className="flex flex-wrap items-center justify-center gap-2" aria-label="Pagination">
       <button
         type="button"
         className="btn-outline"
@@ -72,4 +72,5 @@ export default function Pagination({ currentPage, lastPage, onPageChange }) {
       </button>
     </nav>
   )
-}
+})
+

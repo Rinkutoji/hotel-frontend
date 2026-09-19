@@ -19,7 +19,7 @@ export default function ProtectedRoute({ actor, roles, children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={LOGIN_PATHS[actor] ?? '/login'} replace state={{ from: location.pathname }} />
+    return <Navigate to={LOGIN_PATHS[actor] ?? '/login'} replace state={{ from: location.pathname + location.search }} />
   }
 
   // A staff member landed on a customer page -> their own home.

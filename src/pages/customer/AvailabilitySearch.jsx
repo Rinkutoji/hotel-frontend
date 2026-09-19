@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { publicRooms } from '../../api/roomApi'
 import useApi from '../../hooks/useApi'
-import { getErrorMessage } from '../../utils/apiError'
 import LoadingState from '../../components/common/LoadingState'
 import EmptyState from '../../components/common/EmptyState'
 import ErrorState from '../../components/common/ErrorState'
@@ -11,6 +11,8 @@ function todayISO() {
   const offset = now.getTimezoneOffset()
   return new Date(now.getTime() - offset * 60000).toISOString().slice(0, 10)
 }
+
+const MAX_SELECTED_ROOMS = 5
 
 function AvailableResult({ room }) {
   return (
@@ -77,9 +79,11 @@ export default function AvailabilitySearch() {
   const minimumDate = todayISO()
 
   const toggleRoom = (id) => {
-    setSelectedRoomIds((prev) =>
-      prev.includes(id) ? prev.filter((roomId) => roomId !== id) : [...prev, id],
-    )
+    setSelectedRoomIds((prev) => {
+      if (prev.includes(id)) return prev.filter((roomId) => roomId !== id)
+      if (prev.length >= MAX_SELECTED_ROOMS) return prev
+      return [...prev, id]
+    })
   }
 
   const handleSearch = async (e) => {
@@ -171,10 +175,13 @@ export default function AvailabilitySearch() {
           <section>
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-lg font-bold text-slate-800">Select rooms</h2>
-              <p className="text-sm text-slate-500">{selectedRoomIds.length} selected</p>
+              <p className="text-sm text-slate-500">
+                {selectedRoomIds.length}/{MAX_SELECTED_ROOMS} selected
+              </p>
             </div>
             <p className="mt-1 text-sm text-slate-400">
-              Choose up to 5 rooms to check. Rooms not listed below are unavailable for your dates.
+              Choose up to {MAX_SELECTED_ROOMS} rooms to check. Rooms not listed below are unavailable for
+              your dates.
             </p>
 
             {Array.isArray(roomsData) && roomsData.length === 0 ? (
@@ -223,7 +230,7 @@ export default function AvailabilitySearch() {
               </div>
             )}
 
-            <button type="button" className="btn-primary mt-6 w-full" disabled={!canSearch} onClick={handleSearch}>
+            <button type="button" className="mt-6 btn-primary w-full" disabled={!canSearch} onClick={handleSearch}>
               {searching ? 'Checking…' : 'Check availability'}
             </button>
           </section>
@@ -235,7 +242,7 @@ export default function AvailabilitySearch() {
               <div className="mt-4">
                 <ErrorState
                   error={searchError}
-                  fallback={getErrorMessage(searchError, 'We could not check availability. Please verify your dates and selected rooms.')}
+                  fallback="We could not check availability. Please verify your dates and selected rooms."
                 />
               </div>
             ) : results === null ? (
@@ -268,6 +275,12 @@ export default function AvailabilitySearch() {
                     selected dates.
                   </p>
                 )}
+                <Link
+                  to={`/book?check_in=${checkIn}&check_out=${checkOut}&rooms=${results.map((room) => room.id).join(',')}`}
+                  className="mt-5 btn-primary w-full"
+                >
+                  Book {results.length} {results.length === 1 ? 'room' : 'rooms'}
+                </Link>
               </>
             )}
           </section>

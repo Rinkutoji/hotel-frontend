@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 const DEFAULT_SORT_OPTIONS = [
   { value: 'name', label: 'Name' },
@@ -14,12 +14,20 @@ function readFilters(filters) {
   }
 }
 
+function filtersKey(filters) {
+  return [filters.min_price ?? '', filters.max_price ?? '', filters.min_adults ?? '', filters.min_children ?? ''].join('|')
+}
+
 export default function FilterBar({ filters, onChange, sortOptions = DEFAULT_SORT_OPTIONS }) {
   const [form, setForm] = useState(() => readFilters(filters))
 
-  useEffect(() => {
+  const key = filtersKey(filters)
+  const [prevKey, setPrevKey] = useState(key)
+
+  if (key !== prevKey) {
+    setPrevKey(key)
     setForm(readFilters(filters))
-  }, [filters.min_price, filters.max_price, filters.min_adults, filters.min_children])
+  }
 
   const hasActiveFilters = useMemo(
     () =>

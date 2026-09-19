@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 
-export default function RoomGallery({ images }) {
+export default memo(function RoomGallery({ images }) {
   const list = Array.isArray(images) ? images : []
   const [activeIndex, setActiveIndex] = useState(0)
   const [prevLength, setPrevLength] = useState(list.length)
@@ -45,7 +45,7 @@ export default function RoomGallery({ images }) {
             <button
               key={image.id}
               type="button"
-              className={`h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors ${
+              className={`h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 ${
                 index === activeIndex ? 'border-brand-600' : 'border-transparent hover:border-slate-300'
               }`}
               onClick={() => setActiveIndex(index)}
@@ -59,4 +59,5 @@ export default function RoomGallery({ images }) {
       )}
     </div>
   )
-}
+})
+

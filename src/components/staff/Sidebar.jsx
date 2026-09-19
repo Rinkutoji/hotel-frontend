@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -20,6 +21,41 @@ function navLinkClass({ isActive }) {
 export default function Sidebar({ open, onClose }) {
   const { user, hasRole, isStaff } = useAuth()
   const visibleItems = NAV_ITEMS.filter((item) => !item.roles || hasRole(item.roles))
+  const firstItemRef = useRef(null)
+  const asideRef = useRef(null)
+
+  /* Focus the first nav item when the drawer opens, keep Tab focus
+   * trapped inside it, and let Escape return focus to the trigger. */
+  useEffect(() => {
+    if (!open) return undefined
+    firstItemRef.current?.focus()
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || !asideRef.current) return
+      const focusables = Array.from(
+        asideRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((el) => el.offsetParent !== null)
+      if (focusables.length === 0) return
+      const first = focusables[0]
+      const last = focusables[focusables.length - 1]
+      const active = document.activeElement
+      if (event.shiftKey && (active === first || active === document.body)) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [open, onClose])
 
   return (
     <>
@@ -32,6 +68,7 @@ export default function Sidebar({ open, onClose }) {
       )}
 
       <aside
+        ref={asideRef}
         className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col bg-slate-900 transition-transform duration-200 lg:translate-x-0 ${
           open ? 'translate-x-0' : '-translate-x-full'
         }`}
@@ -43,12 +80,14 @@ export default function Sidebar({ open, onClose }) {
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-4">
-          {visibleItems.map((item) => (
+          {visibleItems.map((item, index) => (
             <NavLink
               key={item.path}
               to={item.path}
+              ref={index === 0 ? firstItemRef : undefined}
               className={navLinkClass}
               onClick={onClose}
+              tabIndex={open ? 0 : -1}
             >
               {item.label}
             </NavLink>

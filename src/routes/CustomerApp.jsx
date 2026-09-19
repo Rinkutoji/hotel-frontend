@@ -6,6 +6,14 @@ import Home from '../pages/customer/Home'
 import Rooms from '../pages/customer/Rooms'
 import RoomDetails from '../pages/customer/RoomDetails'
 import AvailabilitySearch from '../pages/customer/AvailabilitySearch'
+import BookingCheckout from '../pages/customer/BookingCheckout'
+import MyBookings from '../pages/customer/MyBookings'
+import BookingDetail from '../pages/customer/BookingDetail'
+import PaymentCreate from '../pages/customer/PaymentCreate'
+import PaymentDetail from '../pages/customer/PaymentDetail'
+import CustomerPaymentList from '../pages/customer/CustomerPaymentList'
+import InvoiceList from '../pages/customer/InvoiceList'
+import InvoiceDetail from '../pages/customer/InvoiceDetail'
 import Login from '../pages/customer/Login'
 import Register from '../pages/customer/Register'
 import Profile from '../pages/customer/Profile'
@@ -20,6 +28,70 @@ export default function CustomerApp() {
         <Route path="rooms" element={<Rooms />} />
         <Route path="rooms/:id" element={<RoomDetails />} />
         <Route path="availability" element={<AvailabilitySearch />} />
+        <Route
+          path="book"
+          element={
+            <ProtectedRoute actor="customer">
+              <BookingCheckout />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="bookings"
+          element={
+            <ProtectedRoute actor="customer">
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="bookings/:id"
+          element={
+            <ProtectedRoute actor="customer">
+              <BookingDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="payments"
+          element={
+            <ProtectedRoute actor="customer">
+              <CustomerPaymentList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="payments/new/:bookingId"
+          element={
+            <ProtectedRoute actor="customer">
+              <PaymentCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="payments/:id"
+          element={
+            <ProtectedRoute actor="customer">
+              <PaymentDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="invoices"
+          element={
+            <ProtectedRoute actor="customer">
+              <InvoiceList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="invoices/:id"
+          element={
+            <ProtectedRoute actor="customer">
+              <InvoiceDetail />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="login"
           element={

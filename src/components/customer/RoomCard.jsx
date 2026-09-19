@@ -1,3 +1,4 @@
+import { memo } from 'react'
 const STATUS_STYLES = {
   available: 'bg-green-100 text-green-800',
   reserved: 'bg-yellow-100 text-yellow-800',
@@ -6,7 +7,7 @@ const STATUS_STYLES = {
   maintenance: 'bg-slate-200 text-slate-700',
 }
 
-export default function RoomCard({ room }) {
+export default memo(function RoomCard({ room }) {
   const { room_number, floor, status, room_type } = room
   const statusClass = STATUS_STYLES[status] ?? 'bg-slate-100 text-slate-700'
 
@@ -44,4 +45,5 @@ export default function RoomCard({ room }) {
       </div>
     </div>
   )
-}
+})
+

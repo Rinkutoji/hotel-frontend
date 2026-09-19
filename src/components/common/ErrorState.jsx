@@ -14,7 +14,7 @@ export default function ErrorState({ error, fallback = 'Something went wrong. Pl
       <h3 className="mt-4 text-base font-semibold text-slate-800">Something went wrong</h3>
       <p className="mt-2 max-w-sm text-sm text-red-700">{getErrorMessage(error, fallback)}</p>
       {typeof onRetry === 'function' && (
-        <button type="button" onClick={onRetry} className="btn-outline mt-6">
+        <button type="button" onClick={onRetry} className="mt-6 btn-outline">
           Try again
         </button>
       )}

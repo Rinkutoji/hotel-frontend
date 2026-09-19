@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { publicRooms } from '../../api/roomApi'
 import useApi from '../../hooks/useApi'
 import RoomTypeCard from '../../components/customer/RoomTypeCard'
-import LoadingState from '../../components/common/LoadingState'
+import { SkeletonList } from '../../components/common/Skeleton'
 import ErrorState from '../../components/common/ErrorState'
 
 const FETCH_FEATURED = () => publicRooms.listRoomTypes({ per_page: 3, sort: 'name', direction: 'asc' })
@@ -32,7 +32,7 @@ export default function Home() {
           <Link to="/rooms" className="btn-primary">
             Browse Rooms
           </Link>
-          <Link to="/availability" className="btn-outline bg-white/10 text-white hover:bg-white/20">
+          <Link to="/availability" className="btn-outline-light">
             Check Availability
           </Link>
         </div>
@@ -51,8 +51,8 @@ export default function Home() {
 
         <div className="mt-6">
           {isLoading ? (
-            <div className="py-8">
-              <LoadingState label="Loading featured rooms…" />
+            <div className="py-4">
+              <SkeletonList rows={3} label="Loading featured rooms" />
             </div>
           ) : error ? (
             <ErrorState
@@ -90,12 +90,12 @@ export default function Home() {
         </p>
         <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
           {isAuthenticated && isCustomer ? (
-            <Link to="/rooms" className="btn bg-white text-brand-700 hover:bg-slate-100">
+            <Link to="/rooms" className="btn-light">
               Browse Rooms
             </Link>
           ) : (
             <>
-              <Link to="/availability" className="btn bg-white text-brand-700 hover:bg-slate-100">
+              <Link to="/availability" className="btn-light">
                 Check Availability
               </Link>
             </>

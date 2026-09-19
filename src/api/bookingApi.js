@@ -13,7 +13,7 @@ export const customerBookings = {
   show: (id) => apiClient.get(`/customer/bookings/${id}`),
 
   /** POST /api/v1/customer/bookings/:id/cancel */
-  cancel: (id) => apiClient.post(`/customer/bookings/${id}/cancel`),
+  cancel: (id, reason) => apiClient.post(`/customer/bookings/${id}/cancel`, { reason }),
 }
 
 // ── Staff ─────────────────────────────────────────────────────────────────────
@@ -29,7 +29,7 @@ export const staffBookings = {
   confirm: (id) => apiClient.post(`/staff/bookings/${id}/confirm`),
 
   /** POST /api/v1/staff/bookings/:id/cancel */
-  cancel: (id) => apiClient.post(`/staff/bookings/${id}/cancel`),
+  cancel: (id, reason) => apiClient.post(`/staff/bookings/${id}/cancel`, reason ? { reason } : {}),
 
   /** POST /api/v1/staff/bookings/:id/check-in */
   checkIn: (id) => apiClient.post(`/staff/bookings/${id}/check-in`),

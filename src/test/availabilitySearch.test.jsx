@@ -106,4 +106,28 @@ describe('AvailabilitySearch page', () => {
     fireEvent.change(screen.getByLabelText('Check-out'), { target: { value: '2026-10-05' } })
     expect(screen.getByRole('button', { name: /check availability/i })).toBeDisabled()
   })
+
+  it('limits room selection to the backend maximum of 5', async () => {
+    const rooms = Array.from({ length: 7 }, (_, i) => ({
+      id: 200 + i,
+      room_number: String(200 + i),
+      floor: 1,
+      status: 'available',
+      room_type_id: 1,
+      room_type: { id: 1, name: 'Standard Room', base_price: '89.00' },
+    }))
+    mock.onGet('/public/rooms').reply(200, { success: true, data: rooms, meta: {} })
+    renderPage()
+    await screen.findByText(/Room 200/)
+
+    rooms.forEach((room) => {
+      const checkbox = screen.getByRole('checkbox', { name: new RegExp(room.room_number) })
+      if (checkbox.checked) return
+      fireEvent.click(checkbox)
+    })
+
+    const selected = screen.getAllByRole('checkbox', { checked: true })
+    expect(selected.length).toBe(5)
+    expect(screen.getByText('5/5 selected')).toBeInTheDocument()
+  })
 })

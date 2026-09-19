@@ -10,11 +10,12 @@ export default function SearchBar({ value, onChange, placeholder = 'Search…', 
   }
 
   useEffect(() => {
+    if (text === (value ?? '')) return
     const handler = setTimeout(() => {
       onChange(text)
     }, delay)
     return () => clearTimeout(handler)
-  }, [text, delay, onChange])
+  }, [text, delay, onChange, value])
 
   return (
     <div className="relative">

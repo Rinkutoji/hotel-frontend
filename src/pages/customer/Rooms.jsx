@@ -29,8 +29,6 @@ const CLEARED_FILTERS = {
 export default function Rooms() {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const searchParamsKey = searchParams.toString()
-
   const filters = useMemo(() => {
     const next = {}
     searchParams.forEach((value, key) => {
@@ -41,7 +39,7 @@ export default function Rooms() {
       }
     })
     return next
-  }, [searchParamsKey])
+  }, [searchParams])
 
   const updateFilters = useCallback(
     (patch) => {
@@ -62,10 +60,10 @@ export default function Rooms() {
       page: filters.page ?? 1,
       per_page: PER_PAGE,
       ...(filters.search ? { search: filters.search } : {}),
-      ...(filters.min_price ?? filters.min_price === 0 ? { min_price: filters.min_price } : {}),
-      ...(filters.max_price ?? filters.max_price === 0 ? { max_price: filters.max_price } : {}),
-      ...(filters.min_adults ?? filters.min_adults === 0 ? { min_adults: filters.min_adults } : {}),
-      ...(filters.min_children ?? filters.min_children === 0 ? { min_children: filters.min_children } : {}),
+      ...(filters.min_price != null ? { min_price: filters.min_price } : {}),
+      ...(filters.max_price != null ? { max_price: filters.max_price } : {}),
+      ...(filters.min_adults != null ? { min_adults: filters.min_adults } : {}),
+      ...(filters.min_children != null ? { min_children: filters.min_children } : {}),
       ...(filters.sort ? { sort: filters.sort } : {}),
       ...(filters.direction ? { direction: filters.direction } : {}),
     }),

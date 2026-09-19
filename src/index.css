@@ -8,34 +8,107 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    @apply bg-slate-50 text-slate-900;
+    @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100;
+  }
+
+  /* Respect users who prefer reduced motion. Sweep is already disabled through
+   * Tailwind's `motion-reduce:` variant; disable the few always-on animations
+   * here so they never run regardless of the utility a page uses. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer components {
   .input {
-    @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm
-      focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100
-      disabled:cursor-not-allowed disabled:bg-slate-100;
+    @apply w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-400;
   }
+
   .label {
-    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500;
+    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400;
   }
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium
-      transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed
-      disabled:opacity-60;
+
+  /* Base button chrome shared by every variant. Variants are used without the
+   * `.btn` base in JSX, so the layout is applied to all of them here. */
+  .btn,
+  .btn-primary,
+  .btn-outline,
+  .btn-danger,
+  .btn-danger-ghost,
+  .btn-success,
+  .btn-ghost,
+  .btn-outline-light,
+  .btn-light {
+    @apply inline-flex min-h-[2.5rem] items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors active:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60;
   }
+
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500;
+    @apply bg-brand-600 text-white hover:bg-brand-700 dark:bg-brand-500;
   }
+
+  .btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 dark:bg-green-500;
+  }
+
   .btn-outline {
-    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus:ring-brand-500;
+    @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700;
   }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 dark:bg-red-500;
+  }
+
+  /* Soft destructive button: outlined red, used on cards and forms so obvious
+   * “delete” actions are visibly dangerous without shouting like a solid one. */
+  .btn-danger-ghost {
+    @apply border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-800 dark:bg-red-950/50 dark:text-red-300 dark:hover:bg-red-950;
+  }
+
+  /* Quiet tertiary button, mostly for “clear”/“reset” controls. */
+  .btn-ghost {
+    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white;
+  }
+
+  /* On dark promotional surfaces (hero section). */
+  .btn-outline-light {
+    @apply border border-white/20 bg-white/5 text-white hover:bg-white/10 focus-visible:ring-offset-slate-950;
+  }
+
+  /* White button on brand-coloured bands. */
+  .btn-light {
+    @apply bg-white text-brand-700 hover:bg-slate-100;
+  }
+
+  /* Fixed-size icon-only buttons (mobile menu toggles). */
+  .btn-icon {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white dark:focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
   .field-error {
     @apply mt-1 text-sm text-red-600;
   }
+
   .error-banner {
     @apply mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700;
+  }
+}
+
+@media print {
+  header,
+  footer,
+  aside,
+  nav,
+  button {
+    display: none !important;
+  }
+  main {
+    display: block !important;
   }
 }

@@ -29,6 +29,24 @@ function renderAsGuest(path) {
   )
 }
 
+function renderAsCustomer(path) {
+  useAuth.mockReturnValue({
+    isAuthenticated: true,
+    isCustomer: true,
+    isStaff: false,
+    isLoading: false,
+    hasRole: () => false,
+  })
+
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route path="/*" element={<CustomerApp />} />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
+
 describe('Public routes guest access', () => {
   let mock
 
@@ -73,5 +91,22 @@ describe('Public routes guest access', () => {
     const roomsLinks = await screen.findAllByRole('link', { name: 'Rooms' })
     expect(roomsLinks.length).toBeGreaterThan(0)
     expect(roomsLinks[0]).toHaveAttribute('href', '/rooms')
+  })
+
+  it('renders the public pages for authenticated customers', async () => {
+    mock.onGet('/public/room-types').reply(200, { success: true, data: [], meta: {} })
+    mock.onGet('/public/rooms').reply(200, { success: true, data: [], meta: {} })
+    renderAsCustomer('/rooms')
+    expect(await screen.findByText('Rooms & Suites')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /profile/i })).toBeInTheDocument()
+  })
+
+  it('renders room details and offers back navigation for guests', async () => {
+    mock.onGet('/public/room-types/5').reply(200, { success: true, data: { id: 5, name: 'Deluxe Suite', base_price: '189.00', capacity_adults: 2, capacity_children: 1 } })
+    mock.onGet('/public/room-types/5/images').reply(200, { success: true, data: [] })
+    mock.onGet('/public/rooms').reply(200, { success: true, data: [], meta: {} })
+    renderAsGuest('/rooms/5')
+    const back = await screen.findByText('← Back to rooms')
+    expect(back).toHaveAttribute('href', '/rooms')
   })
 })

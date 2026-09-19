@@ -4,12 +4,20 @@ import PublicOnlyRoute from './PublicOnlyRoute'
 import ProtectedRoute from './ProtectedRoute'
 import StaffLogin from '../pages/staff/Login'
 import StaffDashboard from '../pages/staff/Dashboard'
-import ComingSoon from '../pages/ComingSoon'
+import StaffBookingList from '../pages/staff/BookingList'
+import StaffBookingDetail from '../pages/staff/BookingDetail'
+import StaffPaymentList from '../pages/staff/PaymentList'
+import StaffPaymentDetail from '../pages/staff/PaymentDetail'
+import StaffRooms from '../pages/staff/Rooms'
+import StaffRoomForm from '../pages/staff/RoomForm'
+import StaffRoomTypes from '../pages/staff/RoomTypes'
+import StaffRoomTypeForm from '../pages/staff/RoomTypeForm'
+import StaffRoomTypeImages from '../pages/staff/RoomTypeImages'
+import StaffInvoiceList from '../pages/staff/InvoiceList'
+import StaffInvoiceDetail from '../pages/staff/InvoiceDetail'
+import StaffDiscountList from '../pages/staff/DiscountList'
+import StaffDiscountForm from '../pages/staff/DiscountForm'
 import NotFound from '../pages/NotFound'
-
-function StaffModule({ title }) {
-  return <ComingSoon title={title} />
-}
 
 export default function StaffApp() {
   return (
@@ -35,7 +43,15 @@ export default function StaffApp() {
           path="bookings"
           element={
             <ProtectedRoute actor="staff">
-              <StaffModule title="Bookings" />
+              <StaffBookingList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="bookings/:id"
+          element={
+            <ProtectedRoute actor="staff">
+              <StaffBookingDetail />
             </ProtectedRoute>
           }
         />
@@ -43,7 +59,23 @@ export default function StaffApp() {
           path="rooms"
           element={
             <ProtectedRoute actor="staff">
-              <StaffModule title="Rooms" />
+              <StaffRooms />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="rooms/new"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffRoomForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="rooms/:id/edit"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffRoomForm />
             </ProtectedRoute>
           }
         />
@@ -51,7 +83,31 @@ export default function StaffApp() {
           path="room-types"
           element={
             <ProtectedRoute actor="staff">
-              <StaffModule title="Room Types" />
+              <StaffRoomTypes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="room-types/new"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffRoomTypeForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="room-types/:id/edit"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffRoomTypeForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="room-types/:id/images"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffRoomTypeImages />
             </ProtectedRoute>
           }
         />
@@ -59,7 +115,15 @@ export default function StaffApp() {
           path="payments"
           element={
             <ProtectedRoute actor="staff">
-              <StaffModule title="Payments" />
+              <StaffPaymentList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="payments/:id"
+          element={
+            <ProtectedRoute actor="staff">
+              <StaffPaymentDetail />
             </ProtectedRoute>
           }
         />
@@ -67,7 +131,15 @@ export default function StaffApp() {
           path="invoices"
           element={
             <ProtectedRoute actor="staff">
-              <StaffModule title="Invoices" />
+              <StaffInvoiceList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="invoices/:id"
+          element={
+            <ProtectedRoute actor="staff">
+              <StaffInvoiceDetail />
             </ProtectedRoute>
           }
         />
@@ -75,7 +147,23 @@ export default function StaffApp() {
           path="discounts"
           element={
             <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
-              <StaffModule title="Discounts" />
+              <StaffDiscountList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="discounts/new"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffDiscountForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="discounts/:id/edit"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
+              <StaffDiscountForm />
             </ProtectedRoute>
           }
         />
