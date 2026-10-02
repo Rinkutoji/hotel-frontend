@@ -15,3 +15,7 @@ export const staffProperties = {
   updateBuilding: (id, data) => apiClient.put(`/staff/buildings/${id}`, data),
   destroyBuilding: (id) => apiClient.delete(`/staff/buildings/${id}`),
 }
+
+export const staffBuildings = {
+  show: (id) => apiClient.get(`/staff/buildings/${id}`),
+}
