@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { staffRooms, staffRoomTypes } from '../../api/roomApi'
+import { staffProperties } from '../../api/propertyApi'
 import useApi from '../../hooks/useApi'
 import LoadingState from '../../components/common/LoadingState'
 import ErrorState from '../../components/common/ErrorState'
@@ -22,10 +23,23 @@ export default function RoomForm() {
   const fetchRoomTypes = useCallback(() => staffRoomTypes.list({ per_page: 50 }), [])
   const { data: roomTypes } = useApi(fetchRoomTypes)
 
+  const fetchBuildingGroups = useCallback(async () => {
+    const res = await staffProperties.list({ per_page: 50 })
+    const properties = res?.data?.data ?? []
+    const groups = await Promise.all(
+      properties.map(async (property) => {
+        const buildingRes = await staffProperties.listBuildings(property.id)
+        return { property, buildings: buildingRes?.data?.data ?? [] }
+      }),
+    )
+    return { data: { data: groups } }
+  }, [])
+  const { data: buildingGroups } = useApi(fetchBuildingGroups)
+
   const fetchRoom = useMemo(() => (editing ? () => staffRooms.show(id) : undefined), [editing, id])
   const { data: room, error, isLoading, refetch } = useApi(fetchRoom ?? NOOP_FETCH)
 
-  const [form, setForm] = useState({ room_number: '', room_type_id: '', floor: '' })
+  const [form, setForm] = useState({ room_number: '', room_type_id: '', building_id: '', floor: '' })
   const [fieldErrors, setFieldErrors] = useState({})
   const [submitError, setSubmitError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -37,11 +51,13 @@ export default function RoomForm() {
     setForm({
       room_number: room.room_number ?? '',
       room_type_id: room.room_type_id != null ? String(room.room_type_id) : '',
+      building_id: room.building_id != null ? String(room.building_id) : '',
       floor: room.floor != null ? String(room.floor) : '',
     })
   }
 
   const types = Array.isArray(roomTypes) ? roomTypes : []
+  const groups = Array.isArray(buildingGroups) ? buildingGroups : []
 
   const updateField = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -53,6 +69,7 @@ export default function RoomForm() {
     const nextErrors = {}
     if (!form.room_number.trim()) nextErrors.room_number = ['Room number is required.']
     if (form.room_type_id === '') nextErrors.room_type_id = ['Select a room type.']
+    if (form.building_id === '') nextErrors.building_id = ['Select a building.']
     const floor = Number(form.floor)
     if (form.floor === '' || !Number.isInteger(floor) || floor < 1 || floor > 200) {
       nextErrors.floor = ['Floor must be a whole number between 1 and 200.']
@@ -67,6 +84,7 @@ export default function RoomForm() {
     const payload = {
       room_number: form.room_number.trim(),
       room_type_id: Number(form.room_type_id),
+      building_id: Number(form.building_id),
       floor,
     }
     try {
@@ -173,6 +191,36 @@ export default function RoomForm() {
           </select>
           {fieldErrors.room_type_id &&
             fieldErrors.room_type_id.map((message) => (
+              <p key={message} className="field-error">
+                {message}
+              </p>
+            ))}
+        </div>
+
+        <div>
+          <label htmlFor="building-id" className="label">
+            Building
+          </label>
+          <select
+            id="building-id"
+            name="building_id"
+            className="input"
+            value={form.building_id}
+            onChange={updateField}
+          >
+            <option value="">Select a building…</option>
+            {groups.map((group) => (
+              <optgroup key={group.property.id} label={group.property.name}>
+                {group.buildings.map((building) => (
+                  <option key={building.id} value={building.id}>
+                    {building.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          {fieldErrors.building_id &&
+            fieldErrors.building_id.map((message) => (
               <p key={message} className="field-error">
                 {message}
               </p>

@@ -19,6 +19,8 @@ const STATUS_SUCCES_NAME = {
 const CLEARED_FILTERS = {
   status: undefined,
   room_type_id: undefined,
+  property_id: undefined,
+  building_id: undefined,
   search: undefined,
   page: 1,
 }
@@ -30,6 +32,8 @@ export default function Rooms() {
   const [searchParams, setSearchParams] = useSearchParams()
   const status = searchParams.get('status') ?? ''
   const roomTypeId = searchParams.get('room_type_id') ?? ''
+  const propertyId = searchParams.get('property_id') ?? ''
+  const buildingId = searchParams.get('building_id') ?? ''
   const search = searchParams.get('search') ?? ''
   const page = Number(searchParams.get('page')) || 1
 
@@ -38,9 +42,11 @@ export default function Rooms() {
       page,
       ...(status ? { status } : {}),
       ...(roomTypeId ? { room_type_id: roomTypeId } : {}),
+      ...(propertyId ? { property_id: propertyId } : {}),
+      ...(buildingId ? { building_id: buildingId } : {}),
       ...(search ? { search } : {}),
     }),
-    [status, roomTypeId, search, page],
+    [status, roomTypeId, propertyId, buildingId, search, page],
   )
 
   const fetchRooms = useCallback(() => staffRooms.list(apiParams), [apiParams])
@@ -97,7 +103,7 @@ export default function Rooms() {
   const rooms = Array.isArray(data) ? data : []
   const currentPage = meta?.page ?? page
   const lastPage = meta?.last_page ?? 1
-  const hasFilters = Boolean(status || roomTypeId || search)
+  const hasFilters = Boolean(status || roomTypeId || propertyId || buildingId || search)
   const busy = running !== null
 
   if (isLoading) {
