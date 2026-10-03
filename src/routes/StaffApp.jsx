@@ -13,6 +13,10 @@ import StaffRoomForm from '../pages/staff/RoomForm'
 import StaffRoomTypes from '../pages/staff/RoomTypes'
 import StaffRoomTypeForm from '../pages/staff/RoomTypeForm'
 import StaffRoomTypeImages from '../pages/staff/RoomTypeImages'
+import Properties from '../pages/staff/Properties'
+import PropertyForm from '../pages/staff/PropertyForm'
+import PropertyDetail from '../pages/staff/PropertyDetail'
+import BuildingForm from '../pages/staff/BuildingForm'
 import StaffInvoiceList from '../pages/staff/InvoiceList'
 import StaffInvoiceDetail from '../pages/staff/InvoiceDetail'
 import StaffDiscountList from '../pages/staff/DiscountList'
@@ -108,6 +112,54 @@ export default function StaffApp() {
           element={
             <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
               <StaffRoomTypeImages />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="properties"
+          element={
+            <ProtectedRoute actor="staff">
+              <Properties />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="properties/new"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <PropertyForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="properties/:id"
+          element={
+            <ProtectedRoute actor="staff">
+              <PropertyDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="properties/:id/edit"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <PropertyForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="properties/:id/buildings/new"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <BuildingForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="buildings/:id/edit"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <BuildingForm />
             </ProtectedRoute>
           }
         />

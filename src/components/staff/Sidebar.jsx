@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard', path: '/staff/dashboard' },
   { label: 'Bookings', path: '/staff/bookings' },
   { label: 'Rooms', path: '/staff/rooms' },
+  { label: 'Properties', path: '/staff/properties' },
   { label: 'Room Types', path: '/staff/room-types' },
   { label: 'Payments', path: '/staff/payments' },
   { label: 'Invoices', path: '/staff/invoices' },
