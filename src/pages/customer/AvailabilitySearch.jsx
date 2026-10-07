@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { publicRooms } from '../../api/roomApi'
+import { publicProperties } from '../../api/propertyApi'
 import useApi from '../../hooks/useApi'
 import LoadingState from '../../components/common/LoadingState'
 import EmptyState from '../../components/common/EmptyState'
@@ -13,6 +14,17 @@ function todayISO() {
 }
 
 const MAX_SELECTED_ROOMS = 5
+
+function commitParams(setSearchParams, patch) {
+  setSearchParams((prev) => {
+    const next = new URLSearchParams(prev)
+    Object.entries(patch).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === '') next.delete(key)
+      else next.set(key, String(value))
+    })
+    return next
+  })
+}
 
 function AvailableResult({ room }) {
   return (
@@ -40,6 +52,9 @@ function AvailableResult({ room }) {
 }
 
 export default function AvailabilitySearch() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const propertyId = Number(searchParams.get('property_id')) || undefined
+
   const [checkIn, setCheckIn] = useState('')
   const [checkOut, setCheckOut] = useState('')
   const [selectedRoomIds, setSelectedRoomIds] = useState(() => [])
@@ -50,11 +65,15 @@ export default function AvailabilitySearch() {
 
   const fetchRooms = useCallback(() => {
     const params = { per_page: 50 }
+    if (propertyId) params.property_id = propertyId
     if (roomTypeFilter) params.room_type_id = roomTypeFilter
     return publicRooms.listRooms(params)
-  }, [roomTypeFilter])
+  }, [roomTypeFilter, propertyId])
 
   const { data: roomsData, error: roomsError, isLoading: roomsLoading, refetch } = useApi(fetchRooms)
+
+  const fetchProperties = useCallback(() => publicProperties.list(), [])
+  const { data: properties } = useApi(fetchProperties)
 
   const roomsByType = useMemo(() => {
     const map = new Map()
@@ -96,6 +115,7 @@ export default function AvailabilitySearch() {
         check_in_date: checkIn,
         check_out_date: checkOut,
         rooms: selectedRoomIds,
+        ...(propertyId ? { property_id: propertyId } : {}),
       })
       setResults(Array.isArray(res.data?.data) ? res.data.data : [])
     } catch (err) {
@@ -114,7 +134,27 @@ export default function AvailabilitySearch() {
       </p>
 
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <label htmlFor="property" className="label">Property</label>
+            <select
+              id="property"
+              className="input"
+              value={propertyId ?? ''}
+              onChange={(e) => {
+                commitParams(setSearchParams, { property_id: e.target.value || undefined })
+                setSelectedRoomIds([])
+                setResults(null)
+              }}
+            >
+              <option value="">All properties</option>
+              {(Array.isArray(properties) ? properties : []).map((property) => (
+                <option key={property.id} value={property.id}>
+                  {property.name}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label htmlFor="check-in" className="label">Check-in</label>
             <input
@@ -276,7 +316,7 @@ export default function AvailabilitySearch() {
                   </p>
                 )}
                 <Link
-                  to={`/book?check_in=${checkIn}&check_out=${checkOut}&rooms=${results.map((room) => room.id).join(',')}`}
+                  to={`/book?check_in=${checkIn}&check_out=${checkOut}&rooms=${results.map((room) => room.id).join(',')}${propertyId ? `&property_id=${propertyId}` : ''}`}
                   className="mt-5 btn-primary w-full"
                 >
                   Book {results.length} {results.length === 1 ? 'room' : 'rooms'}

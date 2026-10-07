@@ -20,6 +20,7 @@ export default function BookingCheckout() {
   const checkIn = searchParams.get('check_in') ?? ''
   const checkOut = searchParams.get('check_out') ?? ''
   const roomIds = useMemo(() => parseRoomIds(searchParams.get('rooms')), [searchParams])
+  const propertyId = Number(searchParams.get('property_id')) || undefined
 
   const intentValid = useMemo(() => {
     const datesOk = DATE_PATTERN.test(checkIn) && DATE_PATTERN.test(checkOut)
@@ -64,11 +65,13 @@ export default function BookingCheckout() {
     setSubmitError(null)
     setFieldErrors({})
     try {
-      const res = await customerBookings.create({
+      const payload = {
         check_in_date: checkIn,
         check_out_date: checkOut,
         rooms: availableRooms.map((room) => room.id),
-      })
+      }
+      if (propertyId) payload.property_id = propertyId
+      const res = await customerBookings.create(payload)
       const created = res.data?.data
       if (!created?.id) throw new Error('Invalid booking response')
       navigate(`/bookings/${created.id}`, { state: { created: true, booking: created } })
