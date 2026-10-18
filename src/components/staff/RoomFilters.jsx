@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { staffRoomTypes } from '../../api/roomApi'
 import { staffProperties } from '../../api/propertyApi'
@@ -30,6 +30,12 @@ export default function RoomFilters() {
   const propertyId = searchParams.get('property_id') ?? ''
   const buildingId = searchParams.get('building_id') ?? ''
 
+  useEffect(() => {
+    if (buildingId && !propertyId) {
+      commitParams(setSearchParams, { building_id: undefined, page: 1 })
+    }
+  }, [buildingId, propertyId, setSearchParams])
+
   const fetchRoomTypes = useCallback(() => staffRoomTypes.list({ per_page: 50 }), [])
   const { data: roomTypes } = useApi(fetchRoomTypes)
 
@@ -39,7 +45,7 @@ export default function RoomFilters() {
     const properties = res?.data?.data ?? []
     const groups = await Promise.all(
       properties.map(async (property) => {
-        const buildingRes = await staffProperties.listBuildings(property.id)
+        const buildingRes = await staffProperties.listBuildings(property.id, { per_page: 50 })
         return { property, buildings: buildingRes?.data?.data ?? [] }
       }),
     )

@@ -41,8 +41,8 @@ function parseErrors(err, setFieldErrors) {
 
 function FieldError({ messages }) {
   if (!messages) return null
-  return messages.map((message) => (
-    <p key={message} className="field-error">
+  return messages.map((message, index) => (
+    <p key={`${message}-${index}`} className="field-error">
       {message}
     </p>
   ))

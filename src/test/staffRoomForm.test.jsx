@@ -187,4 +187,12 @@ describe('Staff room form page', () => {
       ).toBeInTheDocument()
     })
   })
+
+  it('requests up to 50 buildings per property for the building select', async () => {
+    renderForm()
+    await screen.findByRole('option', { name: 'East Wing' })
+    const request = mock.history.get.find((r) => r.url === '/staff/properties/1/buildings')
+    expect(request).toBeTruthy()
+    expect(request.params).toEqual({ per_page: 50 })
+  })
 })

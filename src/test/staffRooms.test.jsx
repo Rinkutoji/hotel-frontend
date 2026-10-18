@@ -283,4 +283,39 @@ describe('Staff rooms list page', () => {
     expect(screen.queryByRole('button', { name: 'Delete room' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Mark for maintenance' })).toBeInTheDocument()
   })
+
+  it('clears a building filter when the property filter is absent', async () => {
+    mock.onGet('/staff/rooms').reply(() => [
+      200,
+      { success: true, data: rooms, meta: { page: 1, per_page: 15, total: 2, last_page: 1 } },
+    ])
+    renderPage('/staff/rooms?building_id=5')
+    await screen.findByText('Room 101')
+    await waitFor(() => {
+      expect(lastRoomsRequest().params).toEqual({ page: 1 })
+    })
+  })
+
+  it('requests up to 50 buildings per property for the filter selects', async () => {
+    mock.onGet('/staff/properties').reply(200, {
+      success: true,
+      data: [{ id: 1, name: 'Main Hotel', code: 'MAIN', city: 'Phnom Penh', country: 'Cambodia', status: 'active' }],
+      meta: { page: 1, per_page: 50, total: 1, last_page: 1 },
+    })
+    mock.onGet('/staff/properties/1/buildings').reply(200, {
+      success: true,
+      data: [{ id: 1, name: 'East Wing', code: 'EAST', floor_count: 4, room_count: 6, occupied: 3, occupancy_pct: 50.0 }],
+    })
+    mock.onGet('/staff/rooms').reply(200, {
+      success: true,
+      data: rooms,
+      meta: { page: 1, per_page: 15, total: 2, last_page: 1 },
+    })
+    renderPage()
+    await waitFor(() => {
+      const request = mock.history.get.find((r) => r.url === '/staff/properties/1/buildings')
+      expect(request).toBeTruthy()
+      expect(request.params).toEqual({ per_page: 50 })
+    })
+  })
 })

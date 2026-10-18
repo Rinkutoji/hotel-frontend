@@ -28,7 +28,7 @@ export default function RoomForm() {
     const properties = res?.data?.data ?? []
     const groups = await Promise.all(
       properties.map(async (property) => {
-        const buildingRes = await staffProperties.listBuildings(property.id)
+        const buildingRes = await staffProperties.listBuildings(property.id, { per_page: 50 })
         return { property, buildings: buildingRes?.data?.data ?? [] }
       }),
     )
@@ -164,8 +164,8 @@ export default function RoomForm() {
             onChange={updateField}
           />
           {fieldErrors.room_number &&
-            fieldErrors.room_number.map((message) => (
-              <p key={message} className="field-error">
+            fieldErrors.room_number.map((message, index) => (
+              <p key={`${message}-${index}`} className="field-error">
                 {message}
               </p>
             ))}
@@ -190,8 +190,8 @@ export default function RoomForm() {
             ))}
           </select>
           {fieldErrors.room_type_id &&
-            fieldErrors.room_type_id.map((message) => (
-              <p key={message} className="field-error">
+            fieldErrors.room_type_id.map((message, index) => (
+              <p key={`${message}-${index}`} className="field-error">
                 {message}
               </p>
             ))}
@@ -220,8 +220,8 @@ export default function RoomForm() {
             ))}
           </select>
           {fieldErrors.building_id &&
-            fieldErrors.building_id.map((message) => (
-              <p key={message} className="field-error">
+            fieldErrors.building_id.map((message, index) => (
+              <p key={`${message}-${index}`} className="field-error">
                 {message}
               </p>
             ))}
@@ -243,8 +243,8 @@ export default function RoomForm() {
             onChange={updateField}
           />
           {fieldErrors.floor &&
-            fieldErrors.floor.map((message) => (
-              <p key={message} className="field-error">
+            fieldErrors.floor.map((message, index) => (
+              <p key={`${message}-${index}`} className="field-error">
                 {message}
               </p>
             ))}
