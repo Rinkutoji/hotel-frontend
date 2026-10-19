@@ -21,6 +21,8 @@ import StaffInvoiceList from '../pages/staff/InvoiceList'
 import StaffInvoiceDetail from '../pages/staff/InvoiceDetail'
 import StaffDiscountList from '../pages/staff/DiscountList'
 import StaffDiscountForm from '../pages/staff/DiscountForm'
+import StaffList from '../pages/staff/StaffList'
+import StaffForm from '../pages/staff/StaffForm'
 import NotFound from '../pages/NotFound'
 
 export default function StaffApp() {
@@ -216,6 +218,30 @@ export default function StaffApp() {
           element={
             <ProtectedRoute actor="staff" roles={['admin', 'manager']}>
               <StaffDiscountForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="staff"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <StaffList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="staff/new"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <StaffForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="staff/:id/edit"
+          element={
+            <ProtectedRoute actor="staff" roles={['admin']}>
+              <StaffForm />
             </ProtectedRoute>
           }
         />
